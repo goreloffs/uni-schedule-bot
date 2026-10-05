@@ -1,0 +1,25 @@
+[project]
+name = "uni-schedule-bot"
+version = "0.1.0"
+description = "University schedule parser + Telegram bot"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "Timofey Gorelov", email = "timati2003025@yandex.ru" }
+]
+
+dependencies = [
+    # Заполним по мере развития. Пока — пусто.
+]
+
+[project.optional-dependencies]
+dev = [
+    # Инструменты разработки (линтеры, тесты) — добавим в Итерации 6
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
