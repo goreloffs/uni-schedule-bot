@@ -1,0 +1,36 @@
+# Виртуальное окружение
+.venv/
+venv/
+env/
+
+# Секреты
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Логи и локальные данные
+*.log
+logs/
+*.db
+*.sqlite3
+
+# OS
+.DS_Store
+Thumbs.db
+
