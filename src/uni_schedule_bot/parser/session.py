@@ -26,7 +26,7 @@ def post_login(client: httpx.Client, login_url: str, login: str, password: str, 
             'LoginForm[rememberMe]': remember_me}
     return client.post(login_url, data=data)
 
-def open_shedule_page(client, base_url, login, password) -> httpx.Response:
+def open_schedule_page(client, base_url, login, password) -> httpx.Response:
     login_url = f"{base_url}/user/sign-in/login"
     schedule_url = f"{base_url}/student/schedule?_referrer=%2Fstudent%2Findex"
 
@@ -34,7 +34,6 @@ def open_shedule_page(client, base_url, login, password) -> httpx.Response:
     response = post_login(client, login_url, login, password, csrf)
     role_url = str(response.url)
     client.get(role_url, params={'role': 'Student'})
-    schedule_url = f"{base_url}/student/schedule?_referrer=%2Fstudent%2Findex"
     return client.get(schedule_url)
     
 
@@ -46,7 +45,7 @@ def main():
 
     try:
         client = create_client()#начало сессии
-        schedule_page = open_shedule_page(client, base_url, login, password)
+        schedule_page = open_schedule_page(client, base_url, login, password)
         schedule_page.text
     finally:
         client.close()
