@@ -12,7 +12,6 @@ def create_client(follow_redirects: bool = True, timeout: float = 10.0):
     )
 
 def fetch_csrf(client: httpx.Client, url: str) -> str:
-    response = client.get(url)
     soup = BeautifulSoup(client.get(url).text, "lxml")
     tag = soup.find("input", attrs={"name": "_csrf"})
     if tag is None:
