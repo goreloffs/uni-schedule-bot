@@ -34,6 +34,7 @@ def main():
     password = os.environ["UNI_PASSWORD"]
     base_url = os.environ["UNI_BASE_URL"]
     login_url = f"{base_url}/user/sign-in/login"
+    schedule_url = f"{base_url}/student/schedule?_referrer=%2Fstudent%2Findex"
 
 
     client = create_client()#начало сессии
@@ -42,14 +43,18 @@ def main():
         
         csrf = fetch_csrf(client, login_url) #Получаем csrf и client.get(url)
 
-
         response = post_login(client, login_url, login, password, csrf)
-        
-
-        pprint(response.status_code)
-        pprint(response.url)
+        role_url = str(response.url)
         if "/user/sign-in/login" in str(response.url):
             raise RuntimeError("Login failed: still on login page")
+        print(response.url)
+        
+        response = client.get(role_url, params={'role': 'Student'})
+        print(response.url)
+        response = client.get(schedule_url)
+        
+        print(response.url)
+        
 
                 
 
