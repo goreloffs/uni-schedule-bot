@@ -26,6 +26,16 @@ def post_login(client: httpx.Client, login_url: str, login: str, password: str, 
             'LoginForm[rememberMe]': remember_me}
     return client.post(login_url, data=data)
 
+def open_shedule_page(client, base_url, login, password) -> httpx.Response:
+    login_url = f"{base_url}/user/sign-in/login"
+    schedule_url = f"{base_url}/student/schedule?_referrer=%2Fstudent%2Findex"
+
+    csrf = fetch_csrf(client, f"{base_url}/user/sign-in/login") #Получаем csrf
+    response = post_login(client, login_url, login, password, csrf)
+    role_url = str(response.url)
+    client.get(role_url, params={'role': 'Student'})
+    schedule_url = f"{base_url}/student/schedule?_referrer=%2Fstudent%2Findex"
+    return client.get(schedule_url)
     
 
 def main():
@@ -33,35 +43,13 @@ def main():
     login = os.environ["UNI_LOGIN"]
     password = os.environ["UNI_PASSWORD"]
     base_url = os.environ["UNI_BASE_URL"]
-    login_url = f"{base_url}/user/sign-in/login"
-    schedule_url = f"{base_url}/student/schedule?_referrer=%2Fstudent%2Findex"
-
-
-    client = create_client()#начало сессии
 
     try:
-        
-        csrf = fetch_csrf(client, login_url) #Получаем csrf и client.get(url)
-
-        response = post_login(client, login_url, login, password, csrf)
-        role_url = str(response.url)
-        if "/user/sign-in/login" in str(response.url):
-            raise RuntimeError("Login failed: still on login page")
-        print(response.url)
-        
-        response = client.get(role_url, params={'role': 'Student'})
-        print(response.url)
-        response = client.get(schedule_url)
-        
-        print(response.url)
-        
-
-                
-
+        client = create_client()#начало сессии
+        schedule_page = open_shedule_page(client, base_url, login, password)
+        schedule_page.text
     finally:
         client.close()
-
-
 
 if __name__ == "__main__":
     main()
