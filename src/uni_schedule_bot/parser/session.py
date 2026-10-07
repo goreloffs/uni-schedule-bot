@@ -45,8 +45,10 @@ def main():
 
     try:
         client = create_client()#начало сессии
-        schedule_page = open_schedule_page(client, base_url, login, password)
-        schedule_page.text
+        schedule_page = open_schedule_page(client, base_url, login, password)#авторизовались и открыли страницу с расписанием
+
+        with open("schedule.html", "w", encoding="utf-8") as f:
+            f.write(schedule_page.text)
     finally:
         client.close()
 
