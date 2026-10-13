@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from uni_schedule_bot.parser.session import create_client
 from pprint import pprint
 
-#функция отдает страницу с расписанием в html по заданному диапозону даты
+#функция отдает страницу с расписанием в html по заданному диапазону даты
 def fetch_schedule(client: httpx.Client, base_url: str, group: str, date_from: str, date_to: str) -> str:
     
     schedule_url = f"{base_url}/public-schedule/group"
@@ -27,28 +27,30 @@ def parse_schedule(html: str) -> list[dict]:
 
     #проходимся по массиву, когда встречаем блок с датой, указываем текущую дату. если блок с парой, вынимаем необходимые значения и вносим новый словарь
     for tag in all_tags:
-        if tag.attrs.get('class') == ['date-bar']:
+        if "date-bar" in tag["class"]:
             current_date = tag.text.strip()
-            continue
         else:
             number = int(tag.find("div", class_="lesson-number").contents[0].text.strip())   #contents[0].text.strip()
 
-            time_text = soup.find("div", class_="lesson-time").text.strip()
+            time_text = tag.find("div", class_="lesson-time").text.strip()
             parts = time_text.split("–")
             time_start = parts[0].strip()
             time_end = parts[1].strip()
 
-            title = soup.find("div", class_="lesson-title").text.strip()
-            auditorium = soup.find("span", class_="lesson-auditorium").text.strip()
+            title = tag.find("div", class_="lesson-title").text.strip()
+            auditorium_tag = tag.find("span", class_="lesson-auditorium")
+            if auditorium_tag:
+                auditorium = auditorium_tag.text.strip()
+            else:
+                auditorium = None
 
-            details_text = soup.find("div", class_="lesson-details").get_text(" ", strip=True)
-            teacher = ""
+            details_text = tag.find("div", class_="lesson-details").get_text(" ", strip=True)
             if "Преподаватель:" in details_text:
                 teacher = details_text.split("Преподаватель:", 1)[1].strip()
             else:
                 teacher = None
 
-            lesson_type = soup.find("div", class_="lesson-type").text.strip()
+            lesson_type = tag.find("div", class_="lesson-type").text.strip()
 
             schedule.append({
                 "date": current_date,
@@ -64,24 +66,24 @@ def parse_schedule(html: str) -> list[dict]:
         
 
 def main():
-    # load_dotenv()
-    # base_url = os.environ["UNI_BASE_URL"]
-    # try:
-    #     client = create_client()
-    #     html_schedule = fetch_schedule(client, base_url, "МПИ26", "2026-10-07", "2026-10-13")
-    # finally:
-    #     client.close()
-    #
+    load_dotenv()
+    base_url = os.environ["UNI_BASE_URL"]
+    group = "МПИ26"
+    date_from = "2026-10-12"
+    date_to = "2026-10-18"
+    with create_client() as client:
+        html_schedule = fetch_schedule(client, base_url, group, date_from, date_to)
+    
 
 
-    with open("schedule.html", encoding="utf-8") as f:
-        html_schedule = f.read()
+    # with open("schedule.html", encoding="utf-8") as f:
+    #     html_schedule = f.read()
 
     
-    date = parse_schedule(html_schedule)
+    schedule = parse_schedule(html_schedule)
 
 
-    pprint(date)
+    pprint(schedule)
     
 
 
