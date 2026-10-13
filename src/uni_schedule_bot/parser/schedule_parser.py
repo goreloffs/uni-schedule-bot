@@ -30,7 +30,7 @@ def parse_schedule(html: str) -> list[dict]:
         if "date-bar" in tag["class"]:
             current_date = tag.text.strip()
         else:
-            number = int(tag.find("div", class_="lesson-number").contents[0].text.strip())   #contents[0].text.strip()
+            number = int(tag.find("div", class_="lesson-number").contents[0].text.strip())
 
             time_text = tag.find("div", class_="lesson-time").text.strip()
             parts = time_text.split("–")
